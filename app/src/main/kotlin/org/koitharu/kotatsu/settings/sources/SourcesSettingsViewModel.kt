@@ -4,6 +4,9 @@ import kotlinx.coroutines.launch
 import org.koitharu.kotatsu.core.model.CustomMangaSource
 import org.koitharu.kotatsu.parsers.model.ContentType
 import androidx.lifecycle.viewModelScope
+import android.content.Context
+import android.content.ComponentName
+import android.content.pm.PackageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
