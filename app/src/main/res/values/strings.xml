@@ -522,6 +522,8 @@
     <string name="source_enabled">Source enabled</string>
     <string name="no_manga_sources_catalog_text">There are no sources available in this section, or all of it might have been already added.\nStay tuned</string>
     <string name="no_manga_sources_found">No available manga sources found by your query</string>
+    <!-- CORRECTION: Ajout de la chaîne manquante -->
+    <string name="sources_catalog">Catalog</string>
     <string name="catalog">Catalog</string>
     <string name="manage_sources">Manage sources</string>
     <string name="manual">Manual</string>
