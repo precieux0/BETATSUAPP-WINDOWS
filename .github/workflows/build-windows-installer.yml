@@ -1,0 +1,116 @@
+name: Build APK and create Windows installer (SFX)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build APK (Gradle)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Grant execute for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease --no-daemon --no-parallel
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/*.apk
+
+  make-installer:
+    name: Create Windows installer (SFX)
+    runs-on: windows-latest
+    needs: build-apk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+          path: artifacts
+
+      - name: Install 7-Zip
+        shell: powershell
+        run: |
+          choco install 7zip -y
+
+      - name: Create README and install script
+        shell: powershell
+        run: |
+          $out = "$env:GITHUB_WORKSPACE\\installer_files"
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          @"
+          Betatsu kicho installer package
+
+          This package contains an Android APK for Betatsu kicho.
+
+          To install on a Windows machine you can:
+          - Use an Android emulator (e.g., BlueStacks, Nox) and sideload the APK.
+          - Or connect an Android device and use ADB:
+              adb install -r "path-to-apk-file"
+
+          "@ | Out-File -FilePath (Join-Path $out README.txt) -Encoding UTF8
+
+          @"
+          @echo off
+          echo This package contains the APK for Betatsu kicho.
+          echo To install: use an Android emulator and sideload the APK, or connect a device and run:
+          echo adb install -r "%%~dp0\*.apk"
+          pause
+          "@ | Out-File -FilePath (Join-Path $out install.bat) -Encoding ASCII
+
+          Copy-Item -Path (Join-Path $env:GITHUB_WORKSPACE 'artifacts\*.apk') -Destination $out -Force
+
+      - name: Create 7z archive
+        shell: powershell
+        run: |
+          $work = "$env:GITHUB_WORKSPACE\\installer_files"
+          $pkg = Join-Path $work "package.7z"
+          "C:\Program Files\7-Zip\7z.exe" a -t7z $pkg "$work\*"
+
+      - name: Build SFX installer (7z.sfx)
+        shell: powershell
+        run: |
+          $work = Join-Path $env:GITHUB_WORKSPACE 'installer_files'
+          $sfx = 'C:\Program Files\7-Zip\7z.sfx'
+          $pkg = Join-Path $work 'package.7z'
+          $configPath = Join-Path $work 'config.txt'
+          $cfg = ";!@Install@!UTF-8!`nTitle=\"Betatsu kicho Installer\"`nBeginPrompt=\"Do you want to extract and view the installer contents?\"`nRunProgram=\"install.bat\"`n;!@InstallEnd@!"
+          [System.IO.File]::WriteAllText($configPath, $cfg, [System.Text.Encoding]::UTF8)
+          $outExe = Join-Path $work 'Betatsu-kicho-installer.exe'
+          $filesToConcat = @($sfx, $configPath, $pkg)
+          $outStream = [System.IO.File]::OpenWrite($outExe)
+          try {
+            foreach ($f in $filesToConcat) {
+              if (-not (Test-Path $f)) {
+                Write-Host "Warning: file not found: $f"
+                continue
+              }
+              $bytes = [System.IO.File]::ReadAllBytes($f)
+              $outStream.Write($bytes, 0, $bytes.Length)
+            }
+          } finally {
+            $outStream.Close()
+          }
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: betatsu-windows-installer
+          path: installer_files/Betatsu-kicho-installer.exe

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<color name="error">#BA1B1B</color>
+	<color name="errorContainer">#FFDAD4</color>
+	<color name="onError">#FFFFFF</color>
+	<color name="onErrorContainer">#410001</color>
+
+	<!-- AMOLED Theme -->
+	<color name="surface_amoled">#080808</color>
+	<color name="background_amoled">#000000</color>
+
+	<!-- Other Colors -->
+
+	<color name="blue_primary">#FF1493</color> <!-- Hot Pink for Betatsu Kicho -->
+	<color name="secondary_primary">#00FFFF</color> <!-- Cyan accent -->
+	<color name="tertiary_primary">#FFD700</color> <!-- Gold for highlights -->
+	<color name="background_gradient_start">#1a1a2e</color>
+	<color name="background_gradient_end">#16213e</color>
+	<color name="card_background">#0f3460</color>
+	<color name="text_primary">#FFFFFF</color>
+	<color name="text_secondary">#B0B0B0</color>
+	<color name="accent_flashy">#FF4500</color> <!-- Orange Red for buttons -->
+	<color name="glow_effect">#FF1493</color>
+	<color name="dim">#99000000</color>
+	<color name="dim2">#C8FFFFFF</color>
+	<color name="dim_lite">#66000000</color>
+	<color name="warning">#E65100</color>
+	<color name="launcher_background">#FFFFFF</color>
+	<color name="common_green">#388E3C</color>
+	<color name="common_red">#D32F2F</color>
+	<color name="common_yellow">#FBC02D</color>
+	<color name="nsfw_18">#FF8A65</color>
+	<color name="nsfw_16">#FFD54F</color>
+
+	<!-- Color schemes colors -->
+	<color name="background_miku">#F7FAF8</color>
+	<color name="background_asuka">#FFF8F7</color>
+	<color name="background_mion">#F8FAF6</color>
+	<color name="background_rikka">#FCF8FD</color>
+	<color name="background_sakura">#FFF8F8</color>
+	<color name="background_mamimi">#FFF8F7</color>
+	<color name="background_kanade">#F3F3F3</color>
+</resources>
